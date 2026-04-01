@@ -8,6 +8,7 @@ namespace Gestion.Ganadera.Application.Observability.ViewModels
         public long Evento_Seguridad_Codigo { get; set; }
         public DateTime Evento_Seguridad_Fecha { get; set; }
         public string Evento_Seguridad_Tipo_Evento { get; set; } = null!;
+        public long? Cliente_Codigo { get; set; }
         public string Evento_Seguridad_Ip { get; set; } = null!;
         public string Evento_Seguridad_Endpoint { get; set; } = null!;
         public string? Evento_Seguridad_Origin { get; set; }

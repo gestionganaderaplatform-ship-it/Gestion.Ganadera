@@ -7,6 +7,7 @@ namespace Gestion.Ganadera.Application.Observability.ViewModels
     {
         public long Metrica_Solicitud_Codigo { get; set; }
         public string Metrica_Solicitud_Api_Codigo { get; set; } = string.Empty;
+        public long? Cliente_Codigo { get; set; }
         public string Metrica_Solicitud_Metodo_Http { get; set; } = string.Empty;
         public string Metrica_Solicitud_Ruta_Request { get; set; } = string.Empty;
         public int Metrica_Solicitud_Codigo_Estado { get; set; }

@@ -16,6 +16,7 @@ public class LogAplicacion
         public string? Log_Aplicacion_Metodo { get; set; }
         public string? Log_Aplicacion_Ruta { get; set; }
 
+        public long? Cliente_Codigo { get; set; }
         public string? Log_Aplicacion_Usuario { get; set; }
         public string Log_Aplicacion_CorrelationId { get; set; } = string.Empty;
 

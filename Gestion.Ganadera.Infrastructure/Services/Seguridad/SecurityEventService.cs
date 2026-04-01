@@ -13,11 +13,13 @@ namespace Gestion.Ganadera.Infrastructure.Seguridad
     public sealed class SecurityEventService(
         AppDbContext context,
         IMapper mapper,
-        IApiInfoProvider apiInfoProvider) : ISecurityEventService
+        IApiInfoProvider apiInfoProvider,
+        ICurrentClientProvider currentClientProvider) : ISecurityEventService
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly IApiInfoProvider _apiInfoProvider = apiInfoProvider;
+        private readonly ICurrentClientProvider _currentClientProvider = currentClientProvider;
 
         public async Task RegistrarAsync(EventoSeguridadViewModel evento)
         {
@@ -25,6 +27,7 @@ namespace Gestion.Ganadera.Infrastructure.Seguridad
             {
                 var entidad = _mapper.Map<EventoSeguridad>(evento);
                 entidad.Evento_Seguridad_Api_Codigo = _apiInfoProvider.ApiCodigo;
+                entidad.Cliente_Codigo ??= _currentClientProvider.ClientNumericId;
 
                 _context.Seguridad_Eventos.Add(entidad);
                 await _context.SaveChangesAsync();

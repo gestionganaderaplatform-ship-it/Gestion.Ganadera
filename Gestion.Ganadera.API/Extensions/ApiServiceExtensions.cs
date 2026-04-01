@@ -20,6 +20,7 @@ public static class ApiServiceExtensions
         builder.Services.AddSingleton<IApiInfoProvider, ApiInfoProvider>();
         builder.Services.AddSingleton<IExcelImportSettingsProvider, ExcelImportSettingsProvider>();
         builder.Services.AddScoped<ICurrentActorProvider, CurrentActorProvider>();
+        builder.Services.AddScoped<ICurrentClientProvider, CurrentClientProvider>();
         return builder;
     }
 }

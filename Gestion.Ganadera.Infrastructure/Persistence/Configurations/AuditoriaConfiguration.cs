@@ -18,7 +18,11 @@ public class AuditoriaConfiguration : IEntityTypeConfiguration<Auditoria>
               .HasMaxLength(100)
               .IsRequired();
 
+        entity.Property(x => x.Cliente_Codigo);
+
         entity.Property(x => x.Auditoria_Codigo)
               .ValueGeneratedOnAdd();
+
+        entity.HasIndex(x => x.Cliente_Codigo);
     }
 }

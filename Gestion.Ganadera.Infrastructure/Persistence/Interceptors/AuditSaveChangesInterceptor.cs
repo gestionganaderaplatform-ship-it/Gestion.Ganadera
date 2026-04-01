@@ -13,10 +13,12 @@ namespace Gestion.Ganadera.Infrastructure.Persistence.Interceptors
     /// </summary>
     public class AuditSaveChangesInterceptor(
         IApiInfoProvider apiInfoProvider,
-        ICurrentActorProvider currentActorProvider) : SaveChangesInterceptor
+        ICurrentActorProvider currentActorProvider,
+        ICurrentClientProvider currentClientProvider) : SaveChangesInterceptor
     {
         private readonly IApiInfoProvider _apiInfoProvider = apiInfoProvider;
         private readonly ICurrentActorProvider _currentActorProvider = currentActorProvider;
+        private readonly ICurrentClientProvider _currentClientProvider = currentClientProvider;
 
         public override InterceptionResult<int> SavingChanges(
             DbContextEventData eventData,
@@ -78,7 +80,8 @@ namespace Gestion.Ganadera.Infrastructure.Persistence.Interceptors
                             entry,
                             ahora,
                             _apiInfoProvider.ApiCodigo,
-                            _currentActorProvider.ActorId);
+                            _currentActorProvider.ActorId,
+                            _currentClientProvider.ClientNumericId);
                         break;
                 }
             }
@@ -89,7 +92,8 @@ namespace Gestion.Ganadera.Infrastructure.Persistence.Interceptors
             EntityEntry<AuditableEntity> entry,
             DateTime ahora,
             string apiCodigo,
-            string? actorId)
+            string? actorId,
+            long? clienteCodigo)
         {
             var tableName = entry.Metadata.GetTableName() ?? "TablaDesconocida";
             var valoresAnteriores = entry.GetDatabaseValues();
@@ -104,6 +108,7 @@ namespace Gestion.Ganadera.Infrastructure.Persistence.Interceptors
 
             var auditoria = new Auditoria
             {
+                Cliente_Codigo = clienteCodigo,
                 Auditoria_Api_Codigo = apiCodigo,
                 Auditoria_Nombre_Tabla = tableName,
                 Auditoria_Valor_Clave = JsonConvert.SerializeObject(

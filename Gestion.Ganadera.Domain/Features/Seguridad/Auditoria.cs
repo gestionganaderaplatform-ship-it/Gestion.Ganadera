@@ -6,6 +6,7 @@ namespace Gestion.Ganadera.Domain.Features.Seguridad
     public class Auditoria
     {
         public long Auditoria_Codigo { get; set; }
+        public long? Cliente_Codigo { get; set; }
         public string Auditoria_Api_Codigo { get; set; } = string.Empty;
         public string Auditoria_Nombre_Tabla { get; set; } = string.Empty;
         public string Auditoria_Valor_Clave { get; set; } = string.Empty;

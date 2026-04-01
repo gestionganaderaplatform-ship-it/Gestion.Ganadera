@@ -16,6 +16,8 @@ public class MetricaSolicitudConfiguration : IEntityTypeConfiguration<MetricaSol
               .HasMaxLength(100)
               .IsRequired();
 
+        entity.Property(x => x.Cliente_Codigo);
+
         entity.Property(x => x.Metrica_Solicitud_Metodo_Http)
               .HasMaxLength(10)
               .IsRequired();
@@ -29,5 +31,7 @@ public class MetricaSolicitudConfiguration : IEntityTypeConfiguration<MetricaSol
 
         entity.Property(x => x.Metrica_Solicitud_Fecha_Creacion)
               .HasDefaultValueSql("SYSDATETIME()");
+
+        entity.HasIndex(x => x.Cliente_Codigo);
     }
 }

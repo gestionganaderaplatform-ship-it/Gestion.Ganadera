@@ -18,5 +18,9 @@ public class EventoSeguridadConfiguration : IEntityTypeConfiguration<EventoSegur
 
         entity.Property(x => x.Evento_Seguridad_Fecha)
               .HasDefaultValueSql("SYSDATETIME()");
+
+        entity.Property(x => x.Cliente_Codigo);
+
+        entity.HasIndex(x => x.Cliente_Codigo);
     }
 }

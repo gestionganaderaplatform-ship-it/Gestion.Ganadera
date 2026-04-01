@@ -25,6 +25,19 @@ namespace Gestion.Ganadera.API.Extensions
                             ColumnName = "Log_Aplicacion_Api_Codigo",
                             DataType = SqlDbType.NVarChar,
                             DataLength = 100
+                        },
+                        new()
+                        {
+                            ColumnName = "Log_Aplicacion_Usuario",
+                            DataType = SqlDbType.NVarChar,
+                            DataLength = 200,
+                            AllowNull = true
+                        },
+                        new()
+                        {
+                            ColumnName = "Cliente_Codigo",
+                            DataType = SqlDbType.BigInt,
+                            AllowNull = true
                         }
                     }
                 };
