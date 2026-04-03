@@ -15,19 +15,13 @@ namespace Gestion.Ganadera.API.Security.Permissions
     /// <summary>
     /// Soporta claims repetidos o listas separadas por coma, punto y coma o espacios.
     /// </summary>
-    public sealed class PermissionAuthorizationHandler(bool jwtEnabled)
+    public sealed class PermissionAuthorizationHandler
         : AuthorizationHandler<PermissionAuthorizationRequirement>
     {
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             PermissionAuthorizationRequirement requirement)
         {
-            if (!jwtEnabled)
-            {
-                context.Succeed(requirement);
-                return Task.CompletedTask;
-            }
-
             if (context.User.Identity?.IsAuthenticated != true)
             {
                 return Task.CompletedTask;

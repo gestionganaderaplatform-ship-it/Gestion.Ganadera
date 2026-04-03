@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Registra la infraestructura transversal y los servicios base del host.
 builder.AddApiServices();
 builder.AddLogging();
+builder.AddForwardedHeadersSupport();
 builder.AddRateLimiting();
 builder.AddAutoMapper();
 builder.AddOpenApiServices();

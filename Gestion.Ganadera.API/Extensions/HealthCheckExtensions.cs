@@ -18,10 +18,15 @@ namespace Gestion.Ganadera.API.Extensions
 
             builder.Services
                 .AddHealthChecks()
+                .AddCheck(
+                    name: "self",
+                    check: () => HealthCheckResult.Healthy("API activa."),
+                    tags: ["live"])
                 .AddSqlServer(
                     connectionString: connectionString,
                     name: "sqlserver",
-                    failureStatus: HealthStatus.Unhealthy
+                    failureStatus: HealthStatus.Unhealthy,
+                    tags: ["ready"]
                 );
 
             return builder;

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using System.Text.Json;
 using Gestion.Ganadera.API.Middleware;
 
@@ -20,6 +21,11 @@ namespace Gestion.Ganadera.API.Extensions
                     .ExcludeFromDescription();
             }
 
+            if (app.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))
+            {
+                app.UseForwardedHeaders();
+            }
+
             app.UseHttpsRedirection();
 
             var corsSection = app.Configuration.GetSection("Cors");
@@ -35,7 +41,7 @@ namespace Gestion.Ganadera.API.Extensions
             app.UseAuthorization();
             app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseMiddleware<ErrorHandlerMiddleware>();
-            app.MapHealthChecks("/health", new HealthCheckOptions
+            var healthOptions = new HealthCheckOptions
             {
                 ResponseWriter = async (context, report) =>
                 {
@@ -59,7 +65,24 @@ namespace Gestion.Ganadera.API.Extensions
                             WriteIndented = true
                         }));
                 }
+            };
+
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains("live"),
+                ResponseWriter = healthOptions.ResponseWriter
             });
+
+            var readinessEndpoint = app.MapHealthChecks("/health/ready", new HealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains("ready"),
+                ResponseWriter = healthOptions.ResponseWriter
+            });
+
+            if (app.Configuration.GetValue<bool>("RateLimiting:Global:Enabled"))
+            {
+                readinessEndpoint.RequireRateLimiting("GlobalRateLimit");
+            }
 
             return app;
         }

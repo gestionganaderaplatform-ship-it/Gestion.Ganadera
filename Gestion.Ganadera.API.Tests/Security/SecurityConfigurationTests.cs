@@ -40,22 +40,22 @@ namespace Gestion.Ganadera.API.Tests.Security
         }
 
         [Fact]
-        public async Task PermissionAuthorizationHandler_Succeeds_WhenJwtIsDisabled()
+        public async Task PermissionAuthorizationHandler_DoesNotSucceed_WhenPrincipalIsAnonymous()
         {
             var requirement = new PermissionAuthorizationRequirement(ControllerPermission.GetAll);
-            var handler = new PermissionAuthorizationHandler(jwtEnabled: false);
+            var handler = new PermissionAuthorizationHandler();
             var context = new AuthorizationHandlerContext([requirement], new ClaimsPrincipal(), resource: null);
 
             await handler.HandleAsync(context);
 
-            Assert.True(context.HasSucceeded);
+            Assert.False(context.HasSucceeded);
         }
 
         [Fact]
         public async Task PermissionAuthorizationHandler_Succeeds_WhenPermissionClaimMatches()
         {
             var requirement = new PermissionAuthorizationRequirement(ControllerPermission.GetAll);
-            var handler = new PermissionAuthorizationHandler(jwtEnabled: true);
+            var handler = new PermissionAuthorizationHandler();
             var identity = new ClaimsIdentity(
             [
                 new Claim(PermissionPolicy.ClaimType, "GetAll,Create")
@@ -72,10 +72,10 @@ namespace Gestion.Ganadera.API.Tests.Security
         }
 
         [Fact]
-        public async Task PermissionAuthorizationHandler_DoesNotSucceed_WhenUserIsUnauthenticated()
+        public async Task PermissionAuthorizationHandler_DoesNotSucceed_WhenIdentityIsUnauthenticated()
         {
             var requirement = new PermissionAuthorizationRequirement(ControllerPermission.GetAll);
-            var handler = new PermissionAuthorizationHandler(jwtEnabled: true);
+            var handler = new PermissionAuthorizationHandler();
             var context = new AuthorizationHandlerContext(
                 [requirement],
                 new ClaimsPrincipal(new ClaimsIdentity()),

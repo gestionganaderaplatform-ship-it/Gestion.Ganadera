@@ -10,8 +10,6 @@ public static class AuthorizationExtensions
 {
     public static WebApplicationBuilder AddAuthorizationServices(this WebApplicationBuilder builder)
     {
-        var jwtEnabled = builder.Configuration.GetValue<bool>("Jwt:Enabled");
-
         builder.Services.AddAuthorization(options =>
         {
             foreach (var permission in Enum.GetValues<ControllerPermission>())
@@ -27,18 +25,13 @@ public static class AuthorizationExtensions
                     PermissionPolicy.BuildPolicyName(permission),
                     policy =>
                     {
+                        policy.RequireAuthenticatedUser();
                         policy.AddRequirements(new PermissionAuthorizationRequirement(permission));
-
-                        if (jwtEnabled)
-                        {
-                            policy.RequireAuthenticatedUser();
-                        }
                     });
             }
         });
 
-        builder.Services.AddSingleton<IAuthorizationHandler>(
-            _ => new PermissionAuthorizationHandler(jwtEnabled));
+        builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         return builder;
     }
 }
