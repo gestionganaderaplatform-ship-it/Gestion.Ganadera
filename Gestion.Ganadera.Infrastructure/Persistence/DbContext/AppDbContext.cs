@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Gestion.Ganadera.Application.Abstractions.Interfaces;
+using Gestion.Ganadera.Domain.Features.Navegacion;
 using Gestion.Ganadera.Domain.Features.Seguridad;
 using Gestion.Ganadera.Infrastructure.Observability.Models;
 using Gestion.Ganadera.Infrastructure.Security.Models;
@@ -17,6 +18,7 @@ namespace Gestion.Ganadera.Infrastructure.Persistence
         private readonly ICurrentClientProvider? _currentClientProvider = currentClientProvider;
 
         public DbSet<Auditoria> Auditorias { get; set; } = null!;
+        public DbSet<MenuNavegacion> MenusNavegacion { get; set; } = null!;
         public DbSet<LogAplicacion> Logs { get; set; } = null!;
         public DbSet<MetricaSolicitud> MetricasSolicitud { get; set; } = null!;
         public DbSet<EventoSeguridad> Seguridad_Eventos => Set<EventoSeguridad>();
