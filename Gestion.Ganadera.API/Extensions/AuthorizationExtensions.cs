@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Gestion.Ganadera.API.Security.Permissions;
+using Gestion.Ganadera.API.Security.Planes;
 
 namespace Gestion.Ganadera.API.Extensions;
 
@@ -29,9 +30,20 @@ public static class AuthorizationExtensions
                         policy.AddRequirements(new PermissionAuthorizationRequirement(permission));
                     });
             }
+
+            options.AddPolicy(
+                PoliticaPlan.CuentaPadreProductivoMinimo,
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.AddRequirements(new RequisitoPlanMinimo(
+                        NivelPlanAcceso.Productivo,
+                        requiereCuentaPadre: true));
+                });
         });
 
         builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        builder.Services.AddSingleton<IAuthorizationHandler, ManejadorAutorizacionPlan>();
         return builder;
     }
 }

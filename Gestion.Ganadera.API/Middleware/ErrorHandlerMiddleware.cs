@@ -24,6 +24,16 @@ namespace Gestion.Ganadera.API.Middleware
             }
             catch (Exception error)
             {
+                if (IsRequestCancellation(error, context.RequestAborted))
+                {
+                    _logger.LogInformation(
+                        error,
+                        "Request canceled by client | Method: {Method} | Path: {Path}",
+                        context.Request.Method,
+                        context.Request.Path);
+                    return;
+                }
+
                 _logger.LogError(
                  error,
                  "Unhandled exception | Method: {Method} | Path: {Path} | StatusCode: {StatusCode}",
@@ -80,6 +90,12 @@ namespace Gestion.Ganadera.API.Middleware
 
                 await context.Response.WriteAsJsonAsync(problem);
             }
+        }
+
+        private static bool IsRequestCancellation(Exception error, CancellationToken requestAborted)
+        {
+            return error is OperationCanceledException or TaskCanceledException
+                && requestAborted.IsCancellationRequested;
         }
     }
 }
