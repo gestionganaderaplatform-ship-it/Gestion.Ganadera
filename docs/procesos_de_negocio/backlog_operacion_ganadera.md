@@ -8,20 +8,20 @@ Este documento sirve como puente para mantener alineados los contextos entre los
 
 ## Tarea 1: Consulta de Ganado (Listado)
 **Objetivo:** Traer el listado general simplificado.
-- [ ] **Data requerida:** Identificador principal, Sexo, Categoría, Finca, Potrero y Estado.
-- [ ] Construir el ViewModel (`GanadoListViewModel` o afín) proyectando los `Includes` necesarios de las tablas `Animal`, `Identificador_Animal`, `Finca`, `Potrero` y `Categoria_Animal`.
-- [ ] Exponer Query o Endpoint GET en la capa API validando permisos estándares o específicos.
+- [x] **Data requerida:** Identificador principal, Sexo, Categoría, Finca, Potrero y Estado.
+- [x] Construir el ViewModel (`GanadoListViewModel` o afín) proyectando los `Includes` necesarios de las tablas `Animal`, `Identificador_Animal`, `Finca`, `Potrero` y `Categoria_Animal`.
+- [x] Exponer Query o Endpoint GET en la capa API validando permisos estándares o específicos.
 
 ## Tarea 2: Ficha Básica del Animal (Snapshot)
 **Objetivo:** Devolver al front-end el snapshot vital.
-- [ ] Construir `AnimalSnapshotViewModel`.
-- [ ] Endpoint `GET /api/v1/ganaderia/animales/{codigo}` (o afín) leyendo el estado directo cargado en la misma tabla de `Animal`.
+- [x] Construir `AnimalSnapshotViewModel`.
+- [x] Endpoint `GET /api/v1/ganaderia/animales/{codigo}` (o afín) leyendo el estado directo cargado en la misma tabla de `Animal`.
 
 ## Tarea 3: Caso de Uso "Validar Registro Existente"
 **Objetivo:** Aislar validaciones tempranas antes de ensamblar dominios complejos.
-- [ ] Validar regla: Identificador no debe estar repetido a nivel global/tennat (`Cliente_Codigo`).
-- [ ] Validar integridad lógica frente a catálogos configurables: Potrero válido, Categoría válida, Rango válido, Tipo Identificador válido.
-- [ ] Crear comando/validador (`ValidarRegistroExistenteCommand`) cuyo resultado sea arrojar `ProblemDetails` limpios si hay violaciones.
+- [x] Validar regla: Identificador no debe estar repetido a nivel global/tennat (`Cliente_Codigo`).
+- [x] Validar integridad lógica frente a catálogos configurables: Potrero válido, Categoría válida, Rango válido, Tipo Identificador válido.
+- [x] Crear comando/validador (`ValidarRegistroExistenteCommand`) cuyo resultado sea arrojar `ProblemDetails` limpios si hay violaciones.
 
 ## Tarea 4: Caso de Uso "Registrar Existente" (Transacción Completa)
 **Objetivo:** Materializar la inyección en la base de datos de manera Atómica.

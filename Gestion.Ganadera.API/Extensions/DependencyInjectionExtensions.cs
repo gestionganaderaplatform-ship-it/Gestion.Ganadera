@@ -12,6 +12,10 @@ using Gestion.Ganadera.Infrastructure.Services.Ganaderia;
 using Gestion.Ganadera.Infrastructure.Services.Navegacion;
 using Gestion.Ganadera.Infrastructure.Services.Observability;
 using Gestion.Ganadera.Infrastructure.Services.Seguridad;
+using Gestion.Ganadera.Application.Features.Ganaderia.Animales.Interfaces;
+using Gestion.Ganadera.Infrastructure.Persistence.Repositories.Ganaderia;
+using Gestion.Ganadera.Application.Features.Ganaderia.Procesos.RegistroExistente.Interfaces;
+using Gestion.Ganadera.Infrastructure.Persistence.Repositories.Ganaderia.Procesos;
 
 namespace Gestion.Ganadera.API.Extensions
 {
@@ -47,6 +51,9 @@ namespace Gestion.Ganadera.API.Extensions
             builder.Services.AddScoped<IMenuNavegacionService, MenuNavegacionService>();
             builder.Services.AddScoped<IRequestMetricasService, RequestMetricasService>();
             builder.Services.AddScoped<ISecurityEventService, SecurityEventService>();
+            builder.Services.AddScoped<IAnimalConsultaRepository, AnimalConsultaRepository>();
+            builder.Services.AddScoped<IAnimalConsultaService, AnimalConsultaService>();
+            builder.Services.AddScoped<IValidarRegistroExistenteRepository, ValidarRegistroExistenteRepository>();
 
             return builder;
         }
