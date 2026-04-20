@@ -19,6 +19,8 @@ public class AnimalConsultaRepository(AppDbContext context) : IAnimalConsultaRep
                         .Where(i => i.Animal_Codigo == animal.Animal_Codigo 
                                  && i.Identificador_Animal_Es_Principal 
                                  && i.Identificador_Animal_Activo)
+                        .OrderByDescending(i => i.Identificador_Animal_Codigo)
+                        .Take(1)
                         .DefaultIfEmpty()
                     select new GanadoViewModel
                     {
@@ -55,6 +57,8 @@ public class AnimalConsultaRepository(AppDbContext context) : IAnimalConsultaRep
                         .Where(i => i.Animal_Codigo == animal.Animal_Codigo 
                                  && i.Identificador_Animal_Es_Principal 
                                  && i.Identificador_Animal_Activo)
+                        .OrderByDescending(i => i.Identificador_Animal_Codigo)
+                        .Take(1)
                         .DefaultIfEmpty()
                     select new AnimalViewModel
                     {

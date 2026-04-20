@@ -19,6 +19,10 @@ public sealed class IdentificadorAnimalConfiguration : IEntityTypeConfiguration<
         entity.HasIndex(x => new { x.Tipo_Identificador_Codigo, x.Identificador_Animal_Valor })
             .IsUnique();
 
+        entity.HasIndex(x => x.Animal_Codigo)
+            .IsUnique()
+            .HasFilter("[Identificador_Animal_Es_Principal] = 1 AND [Identificador_Animal_Activo] = 1");
+
         entity.Property(x => x.Identificador_Animal_Codigo)
             .ValueGeneratedOnAdd();
 

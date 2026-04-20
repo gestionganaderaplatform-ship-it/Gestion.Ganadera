@@ -1,11 +1,16 @@
+using FluentValidation;
+using FluentValidation.Results;
 using Gestion.Ganadera.Application.Features.Ganaderia.Procesos.RegistroExistente.Interfaces;
-using Gestion.Ganadera.Application.Features.Ganaderia.Procesos.RegistroExistente.Models;
+using Gestion.Ganadera.Application.Features.Ganaderia.Procesos.RegistroExistente.Messages;
 using Gestion.Ganadera.Domain.Features.Ganaderia;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gestion.Ganadera.Infrastructure.Persistence.Repositories.Ganaderia.Procesos;
 
 public class RegistroExistenteRepository(AppDbContext context) : IRegistroExistenteRepository
 {
+    private const string TipoIdentificadorInternoSistema = "INTERNO_SISTEMA";
+
     public async Task<bool> CrearRegistroAtómicoAsync(
         Animal animal,
         IdentificadorAnimal identificador,
@@ -14,13 +19,28 @@ public class RegistroExistenteRepository(AppDbContext context) : IRegistroExiste
         EventoDetalleRegistroExistente fotoRegistro,
         CancellationToken cancellationToken = default)
     {
-        using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
         await context.Animales.AddAsync(animal, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
-            
+
+        var tipoIdentificadorInternoCodigo = await ObtenerTipoIdentificadorInternoCodigoAsync(
+            animal.Cliente_Codigo,
+            cancellationToken);
+
+        var identificadorInterno = new IdentificadorAnimal
+        {
+            Animal_Codigo = animal.Animal_Codigo,
+            Tipo_Identificador_Codigo = tipoIdentificadorInternoCodigo,
+            Identificador_Animal_Valor = ConstruirIdentificadorInterno(animal.Animal_Codigo),
+            Identificador_Animal_Es_Principal = false,
+            Identificador_Animal_Activo = true
+        };
+
         identificador.Animal_Codigo = animal.Animal_Codigo;
-        await context.IdentificadoresAnimal.AddAsync(identificador, cancellationToken);
+        await context.IdentificadoresAnimal.AddRangeAsync(
+            [identificador, identificadorInterno],
+            cancellationToken);
 
         await context.EventosGanaderos.AddAsync(evento, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
@@ -34,7 +54,36 @@ public class RegistroExistenteRepository(AppDbContext context) : IRegistroExiste
 
         await context.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
-            
+
         return true;
     }
+
+    private async Task<long> ObtenerTipoIdentificadorInternoCodigoAsync(
+        long? clienteCodigo,
+        CancellationToken cancellationToken)
+    {
+        var tipoIdentificadorInternoCodigo = await context.TiposIdentificador
+            .IgnoreQueryFilters()
+            .Where(item =>
+                item.Cliente_Codigo == clienteCodigo &&
+                item.Tipo_Identificador_Codigo_Interno == TipoIdentificadorInternoSistema &&
+                item.Tipo_Identificador_Activo)
+            .Select(item => (long?)item.Tipo_Identificador_Codigo)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (!tipoIdentificadorInternoCodigo.HasValue)
+        {
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(IdentificadorAnimal.Tipo_Identificador_Codigo),
+                    ValidarRegistroExistenteMessages.TipoIdentificadorInternoNoDisponible)
+            ]);
+        }
+
+        return tipoIdentificadorInternoCodigo.Value;
+    }
+
+    private static string ConstruirIdentificadorInterno(long animalCodigo)
+        => $"INT-{animalCodigo:D10}";
 }

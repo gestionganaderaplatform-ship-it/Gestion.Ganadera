@@ -9,4 +9,9 @@ public interface ICategoriaAnimalRepository : IBaseRepository<CategoriaAnimalEnt
         string categoriaAnimalNombre,
         long? categoriaAnimalCodigoExcluir = null,
         CancellationToken cancellationToken = default);
+
+    Task<bool> EsCompatibleConSexoAsync(
+        long categoriaAnimalCodigo,
+        string animalSexo,
+        CancellationToken cancellationToken = default);
 }

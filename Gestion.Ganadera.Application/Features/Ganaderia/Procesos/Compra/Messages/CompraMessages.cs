@@ -21,4 +21,6 @@ public static class CompraMessages
     public const string FechaCompraRequerida = "La fecha de compra es obligatoria.";
     public const string FechaCompraFutura = "La fecha de compra no puede ser mayor a la fecha actual.";
     public const string OrigenVendedorRequerido = "El origen o vendedor es obligatorio.";
+    public const string CategoriaIncompatibleConSexo = "La categoría indicada no es compatible con el sexo del animal.";
+    public const string TipoIdentificadorInternoNoDisponible = "No existe el tipo de identificador interno del sistema para este cliente.";
 }

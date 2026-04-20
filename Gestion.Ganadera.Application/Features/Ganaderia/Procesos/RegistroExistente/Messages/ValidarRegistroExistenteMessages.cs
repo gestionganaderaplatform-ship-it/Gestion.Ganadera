@@ -20,4 +20,6 @@ public static class ValidarRegistroExistenteMessages
     public const string SexoRequerido = "El sexo del animal es obligatorio.";
     public const string FechaInformadaRequerida = "La fecha del evento es obligatoria.";
     public const string FechaInformadaFutura = "La fecha del evento no puede ser mayor a la fecha actual.";
+    public const string CategoriaIncompatibleConSexo = "La categoría indicada no es compatible con el sexo del animal.";
+    public const string TipoIdentificadorInternoNoDisponible = "No existe el tipo de identificador interno del sistema para este cliente.";
 }

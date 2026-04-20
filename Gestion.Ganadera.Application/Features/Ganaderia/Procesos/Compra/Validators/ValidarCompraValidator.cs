@@ -53,6 +53,21 @@ public class ValidarCompraValidator : AbstractValidator<ValidarCompraRequest>
            .MustAsync(async (codigo, _) => await categoriaRepository.Existe(codigo))
            .WithMessage(CompraMessages.CategoriaNoExiste);
 
+        When(
+            x => x.Categoria_Animal_Codigo > 0 &&
+                 !string.IsNullOrWhiteSpace(x.Animal_Sexo),
+            () =>
+            {
+                RuleFor(x => x)
+                    .MustAsync(async (request, cancellationToken) =>
+                        await categoriaRepository.EsCompatibleConSexoAsync(
+                            request.Categoria_Animal_Codigo,
+                            request.Animal_Sexo,
+                            cancellationToken))
+                    .WithMessage(CompraMessages.CategoriaIncompatibleConSexo)
+                    .WithName(nameof(ValidarCompraRequest.Categoria_Animal_Codigo));
+            });
+
         RuleFor(x => x.Rango_Edad_Codigo)
            .GreaterThan(0).WithMessage(CompraMessages.RangoEdadCodigoInvalido)
            .MustAsync(async (codigo, _) => await rangoRepository.Existe(codigo))
