@@ -4,6 +4,7 @@ using Gestion.Ganadera.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gestion.Ganadera.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260420190112_RemoveRegistroExistenteMenuNode")]
+    partial class RemoveRegistroExistenteMenuNode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +37,6 @@ namespace Gestion.Ganadera.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("Animal_Fecha_Ingreso_Inicial")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("Animal_Fecha_Nacimiento")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Animal_Fecha_Registro_Ingreso")
@@ -251,9 +251,6 @@ namespace Gestion.Ganadera.Infrastructure.Persistence.Migrations
                         .HasDefaultValueSql("SYSDATETIME()");
 
                     b.Property<DateTime?>("Fecha_Modificado")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("Fecha_Nacimiento")
                         .HasColumnType("datetime2");
 
                     b.Property<long?>("Modificado_Por")
