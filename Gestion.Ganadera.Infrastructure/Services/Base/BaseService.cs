@@ -31,10 +31,11 @@ namespace Gestion.Ganadera.Infrastructure.Services.Base
             return _mapper.Map<IEnumerable<TView>>(entities);
         }
 
-        public async Task<bool> Insertar(TCreateView entidad)
+        public async Task<TView?> Insertar(TCreateView entidad)
         {
             var entity = _mapper.Map<TEntity>(entidad);
-            return await _repository.Insertar(entity);
+            var result = await _repository.Insertar(entity);
+            return result ? _mapper.Map<TView>(entity) : default;
         }
 
         public async Task<bool> InsertarMasivamente(IEnumerable<TCreateView> entidades)

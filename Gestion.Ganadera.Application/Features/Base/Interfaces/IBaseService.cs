@@ -9,7 +9,7 @@ namespace Gestion.Ganadera.Application.Features.Base.Interfaces
     {
         Task<TViewModel?> Consultar(long codigo);
         Task<IEnumerable<TViewModel>> ObtenerTodos();
-        Task<bool> Insertar(TCreateViewModel entidad);
+        Task<TViewModel?> Insertar(TCreateViewModel entidad);
         Task<bool> InsertarMasivamente(IEnumerable<TCreateViewModel> entidades);
         Task<bool> Actualizar(TUpdateViewModel entidad);
         Task<bool> ActualizarParcial(TUpdateViewModel entidad, ISet<string> propiedades);

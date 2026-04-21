@@ -88,8 +88,9 @@ namespace Gestion.Ganadera.API.Controllers.Base
                  );
             }
 
-            return await _service.Insertar(entidad)
-                ? StatusCode(StatusCodes.Status201Created)
+            var result = await _service.Insertar(entidad);
+            return result != null
+                ? StatusCode(StatusCodes.Status201Created, result)
                 : ApiProblemDetailsFactory.BadRequest(
                     HttpContext,
                     detail: ApiErrorMessages.OperationFailed);
