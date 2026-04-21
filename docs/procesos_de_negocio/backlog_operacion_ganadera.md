@@ -1,44 +1,68 @@
-# Backlog de Operación Ganadera (Sincronización Antigravity & AI)
+# Backlog de Operacion Ganadera - Business API
 
-Este documento sirve como puente para mantener alineados los contextos entre los asistentes de IA mientras se trabaja en la API de Gestión Ganadera. El objetivo es poder rotar de contexto sin perder el hilo de qué capas se están afectando y en qué estatus vamos.
+Este backlog concentra el trabajo del dominio y backend de Ganaderia.
+No intenta repetir Auth ni Web. Se usa junto con los otros dos backlogs para cerrar cada proceso end-to-end.
 
-> **Estado Actual Previo:** CRUD Base de Maestras completado (Finca, Potrero, CategoriaAnimal, RangoEdad, TipoIdentificador). Alineado al esquema CQRS/Clean Architecture del template.
+## Forma de trabajo end-to-end
 
----
+Cada proceso nuevo se trabaja en este orden:
 
-## Tarea 1: Consulta de Ganado (Listado)
-**Objetivo:** Traer el listado general simplificado.
-- [x] **Data requerida:** Identificador principal, Sexo, Categoría, Finca, Potrero y Estado.
-- [x] Construir el ViewModel (`GanadoListViewModel` o afín) proyectando los `Includes` necesarios de las tablas `Animal`, `Identificador_Animal`, `Finca`, `Potrero` y `Categoria_Animal`.
-- [x] Exponer Query o Endpoint GET en la capa API validando permisos estándares o específicos.
+1. cerrar contratos y validaciones del backend
+2. exponer endpoints y permisos requeridos
+3. conectar frontend con modelos y servicios
+4. construir pantalla o flujo visible
+5. probar flujo completo con datos reales
+6. ajustar documentacion si algo cambio
 
-## Tarea 2: Ficha Básica del Animal (Snapshot)
-**Objetivo:** Devolver al front-end el snapshot vital.
-- [x] Construir `AnimalSnapshotViewModel`.
-- [x] Endpoint `GET /api/v1/ganaderia/animales/{codigo}` (o afín) leyendo el estado directo cargado en la misma tabla de `Animal`.
+La regla es simple:
+no abrir el siguiente proceso hasta que el actual tenga backend utilizable y frontend conectado.
 
-## Tarea 3: Caso de Uso "Validar Registro Existente"
-**Objetivo:** Aislar validaciones tempranas antes de ensamblar dominios complejos.
-- [x] Validar regla: Identificador no debe estar repetido a nivel global/tennat (`Cliente_Codigo`).
-- [x] Validar integridad lógica frente a catálogos configurables: Potrero válido, Categoría válida, Rango válido, Tipo Identificador válido.
-- [x] Crear comando/validador (`ValidarRegistroExistenteCommand`) cuyo resultado sea arrojar `ProblemDetails` limpios si hay violaciones.
+## Estado actual del backend
 
-## Tarea 4: Caso de Uso "Registrar Existente" (Transacción Completa)
-**Objetivo:** Materializar la inyección en la base de datos de manera Atómica.
-- [x] Crear el Command central (`RegistrarExistenteCommand`).
-- [x] Orquestar en un entorno transaccional atómico el proceso de escritura de 5 bloques:
-      1. Crear registro en tabla `Animal`.
-      2. Crear registro en tabla `Identificador_Animal`.
-      3. Crear registro maestro en tabla `Evento_Ganadero`.
-      4. Pivotar relaciones en tabla `Evento_Ganadero_Animal`.
-      5. Guardar la fotografía del evento en `Evento_Detalle_Registro_Existente`.
-- [x] Consolidar cambios con EF Core asegurando atomicidad o un Rollback completo en caso de fallos.
+### Base transversal
+- [x] Catalogos base por cliente
+- [x] Consulta de ganado
+- [x] Ficha basica del animal
+- [x] Historial basico del animal
+- [x] Validacion de registro existente
+- [x] Registro existente
+- [x] Compra
+- [ ] Movimiento de potrero
 
-## Tarea 5: Historial Básico del Animal
-**Objetivo:** Lectura estructurada para la trazabilidad de negocio.
-- [x] Construir endpoint de sólo lectura para reconstruir la cronología del animal apuntando a un listado filtrado de la tabla `Evento_Ganadero`.
+### Ajustes recientes ya cerrados
+- [x] Crear identificador interno del sistema en registro existente
+- [x] Crear identificador interno del sistema en compra
+- [x] Validar compatibilidad categoria y sexo
+- [x] Restringir un solo identificador principal activo por animal
 
-## Tarea 6: Base para el Segundo Proceso (Compra)
-**Objetivo:** Clonar la estructura operativa del Registro Existente para Compra.
-- [ ] Reutilizar el bloque de validaciones atómicas de "creación de animal".
-- [ ] Reutilizar la transacción núcleo ajustando únicamente la tabla de subdetalle correspondiente (`Evento_Detalle_Compra` si aplicase) para mantener la velocidad de entrega en Fase 1.
+## Procesos Fase 1
+
+### Proceso 1. Registro de existente
+- [x] Endpoint de validacion
+- [x] Endpoint de registro
+- [x] Persistencia atomica de animal, identificadores, evento y detalle
+- [x] Actualizacion de snapshot del animal
+- [x] Impacto en historial
+- [ ] Validacion manual completa con payload real
+
+### Proceso 2. Compra
+- [x] Endpoint de validacion
+- [x] Endpoint de registro
+- [x] Persistencia atomica de animal, identificadores, evento y detalle
+- [x] Actualizacion de snapshot del animal
+- [x] Impacto en historial
+- [ ] Validacion manual completa con payload real
+
+### Proceso 3. Movimiento de potrero
+- [ ] Definir request y response
+- [ ] Crear validador
+- [ ] Crear detalle del proceso
+- [ ] Implementar transaccion
+- [ ] Actualizar snapshot del animal
+- [ ] Impactar historial
+
+## Siguiente bloque recomendado
+
+1. Probar de punta a punta registro existente y compra con payload real
+2. Cerrar movimiento de potrero en backend
+3. Acompanhar al frontend para que el primer flujo quede operativo completo

@@ -2,6 +2,7 @@
 
 ## Alcance
 Este documento consolida la base funcional ya construida en la documentacion generada. El criterio fue mantener lo repetido y estable, eliminar duplicados y dejar aparte lo todavia abierto.
+Debe leerse siempre junto con `00_reglas_rectoras_de_producto_y_documentacion.md`, porque ahi quedo fijada la disciplina de trabajo y la lista de fuentes obligatorias.
 
 ## Vision funcional
 - GANADERO SaaS se define como un sistema gobernado por procesos y eventos, no por mantenimiento libre de entidades.
@@ -16,6 +17,7 @@ Este documento consolida la base funcional ya construida en la documentacion gen
 - Cada cuenta tiene un dueno titular.
 - Una cuenta puede tener una o varias fincas.
 - La operacion diaria ocurre dentro de una finca activa.
+- El onboarding inicial debe crear la primera finca y conducir despues a `Registrar`, empezando por `Registro de existente`.
 - El ganado es el conjunto de animales gestionados en ese contexto.
 - Puede haber participantes por finca con rol y alcance definido.
 
@@ -37,6 +39,14 @@ Este documento consolida la base funcional ya construida en la documentacion gen
 - Potreros y algunos maestros operativos pueden crearse en flujo segun politica.
 - Las correcciones y anulaciones no borran trazabilidad.
 - La relacion madre-cria existe como pieza funcional del dominio.
+
+## Modelo de experiencia de Registrar
+- `Registrar` no es un formulario aislado; es el hub funcional de ejecucion de procesos.
+- `Inicio`, alertas, `Ganado` y `Ficha del animal` pueden conducir hacia `Registrar`.
+- La ejecucion formal del proceso ocurre solo en `Registrar`.
+- La experiencia debe ser guiada por contexto, no por estructura tecnica.
+- Los procesos deben agruparse por naturaleza de negocio y no por entidades.
+- El detalle concentrado de esta regla vive en `03_modelo_de_experiencia_registrar.md`.
 
 ## Procesos incluidos
 

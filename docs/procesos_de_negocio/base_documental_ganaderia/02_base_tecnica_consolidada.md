@@ -2,6 +2,7 @@
 
 ## Alcance
 Este documento consolida lo tecnico que si aparece en la documentacion generada y separa lo que quedo definido, lo que fue propuesto y lo que sigue pendiente de validar.
+Debe leerse siempre junto con `00_reglas_rectoras_de_producto_y_documentacion.md`, porque la implementacion tecnica no debe separarse de la linea funcional aprobada.
 
 ## Definido en esta base documental
 
@@ -32,6 +33,7 @@ Este documento consolida lo tecnico que si aparece en la documentacion generada 
 - En este primer corte se mantuvo la regla de nomenclatura: cada campo propio arranca con el nombre de su tabla.
 - Se simplificaron palabras innecesarias, pero sin quitar el prefijo de tabla.
 - Se quitaron fechas de registro duplicadas en tablas donde la auditoria heredada ya cubre la creacion.
+- Los valores cerrados de dominio para `Animal_Origen_Ingreso`, `Evento_Ganadero_Tipo`, `Evento_Ganadero_Estado` y `Evento_Ganadero_Animal_Estado_Afectacion` se centralizan en el dominio para no repetir texto quemado en servicios.
 
 ### Modelo funcional-tecnico
 - El dominio debe conservar una identidad estable del animal.

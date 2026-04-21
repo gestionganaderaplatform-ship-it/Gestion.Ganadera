@@ -77,6 +77,11 @@ La web será el primer canal completo del producto. La app vendrá después como
 ### 4.7 La experiencia debe soportar la realidad operativa
 El producto debe funcionar bien bajo condiciones reales: jornadas de trabajo, ritmo operativo, usuarios no técnicos, registros posteriores al evento y necesidad de velocidad.
 
+### 4.8 Registrar debe sentirse como un punto único y guiado
+Registrar no es solo una pantalla más. Debe comportarse como el punto central de entrada a los procesos, con lenguaje claro, agrupación por tipo de proceso y ayudas visibles para que el usuario sepa qué hacer según su contexto.
+
+Inicio, alertas, Ganado y Ficha pueden conducir hacia Registrar, pero la ejecución formal del proceso sigue ocurriendo allí. La experiencia debe orientar, no obligar al usuario a navegar por módulos técnicos ni a decidir entre varios puntos alternos de operación.
+
 ---
 
 ## 5. Alcance de esta versión del documento
@@ -447,11 +452,14 @@ Se registra la finca inicial con la información básica requerida.
 #### Paso 3. Configuración inicial mínima
 Se deja definida una base inicial de elementos necesarios, como identificadores operativos habilitados y estructura mínima de la finca.
 
-#### Paso 4. Carga inicial de ganado
-Se ofrece registro manual o carga masiva cuando aplique.
+#### Paso 4. Entrada guiada a Registrar
+Después de crear la finca inicial, el onboarding debe conducir al usuario hacia `Registrar`, entrando primero por `Registro de existente`.
 
-#### Paso 5. Confirmación
-El sistema muestra el resultado y lleva al usuario a Inicio.
+#### Paso 5. Carga inicial de ganado
+Se ofrece registro manual o carga masiva cuando aplique, ya dentro del flujo de `Registro de existente`.
+
+#### Paso 6. Confirmación
+El sistema muestra el resultado y luego lleva al usuario a Inicio o al contexto principal ya con la finca activa y el primer registro realizado o pendiente.
 
 ### 14.3 Regla importante
 El onboarding no reemplaza la necesidad de creación contextual dentro de los flujos operativos.
@@ -1757,4 +1765,3 @@ Esta versión busca convertirse en la base funcional real del producto. Ya no pr
 El principio que debe seguir gobernando todo lo que venga después es este:
 
 el sistema se construye para registrar y entender lo que le pasa al ganado, no para llenar tablas ni sostener pantallas desconectadas.
-
