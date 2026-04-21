@@ -9,4 +9,5 @@ public class ValidarRegistroExistenteRequest
     public long Categoria_Animal_Codigo { get; set; }
     public long Rango_Edad_Codigo { get; set; }
     public string Animal_Sexo { get; set; } = string.Empty;
+    public DateTime? Fecha_Nacimiento { get; set; }
 }

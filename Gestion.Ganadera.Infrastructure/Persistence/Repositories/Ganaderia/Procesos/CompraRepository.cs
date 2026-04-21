@@ -19,43 +19,48 @@ public class CompraRepository(AppDbContext context) : ICompraRepository
         EventoDetalleCompra fotoRegistro,
         CancellationToken cancellationToken = default)
     {
-        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        var strategy = context.Database.CreateExecutionStrategy();
 
-        await context.Animales.AddAsync(animal, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
-
-        var tipoIdentificadorInternoCodigo = await ObtenerTipoIdentificadorInternoCodigoAsync(
-            animal.Cliente_Codigo,
-            cancellationToken);
-
-        var identificadorInterno = new IdentificadorAnimal
+        return await strategy.ExecuteAsync(async () =>
         {
-            Animal_Codigo = animal.Animal_Codigo,
-            Tipo_Identificador_Codigo = tipoIdentificadorInternoCodigo,
-            Identificador_Animal_Valor = ConstruirIdentificadorInterno(animal.Animal_Codigo),
-            Identificador_Animal_Es_Principal = false,
-            Identificador_Animal_Activo = true
-        };
+            await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
-        identificador.Animal_Codigo = animal.Animal_Codigo;
-        await context.IdentificadoresAnimal.AddRangeAsync(
-            [identificador, identificadorInterno],
-            cancellationToken);
+            await context.Animales.AddAsync(animal, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
-        await context.EventosGanaderos.AddAsync(evento, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
+            var tipoIdentificadorInternoCodigo = await ObtenerTipoIdentificadorInternoCodigoAsync(
+                animal.Cliente_Codigo,
+                cancellationToken);
 
-        eventoAnimal.Evento_Ganadero_Codigo = evento.Evento_Ganadero_Codigo;
-        eventoAnimal.Animal_Codigo = animal.Animal_Codigo;
-        await context.EventosGanaderosAnimal.AddAsync(eventoAnimal, cancellationToken);
+            var identificadorInterno = new IdentificadorAnimal
+            {
+                Animal_Codigo = animal.Animal_Codigo,
+                Tipo_Identificador_Codigo = tipoIdentificadorInternoCodigo,
+                Identificador_Animal_Valor = ConstruirIdentificadorInterno(animal.Animal_Codigo),
+                Identificador_Animal_Es_Principal = false,
+                Identificador_Animal_Activo = true
+            };
 
-        fotoRegistro.Evento_Ganadero_Codigo = evento.Evento_Ganadero_Codigo;
-        await context.EventosDetalleCompra.AddAsync(fotoRegistro, cancellationToken);
+            identificador.Animal_Codigo = animal.Animal_Codigo;
+            await context.IdentificadoresAnimal.AddRangeAsync(
+                [identificador, identificadorInterno],
+                cancellationToken);
 
-        await context.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
+            await context.EventosGanaderos.AddAsync(evento, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
-        return true;
+            eventoAnimal.Evento_Ganadero_Codigo = evento.Evento_Ganadero_Codigo;
+            eventoAnimal.Animal_Codigo = animal.Animal_Codigo;
+            await context.EventosGanaderosAnimal.AddAsync(eventoAnimal, cancellationToken);
+
+            fotoRegistro.Evento_Ganadero_Codigo = evento.Evento_Ganadero_Codigo;
+            await context.EventosDetalleCompra.AddAsync(fotoRegistro, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            return true;
+        });
     }
 
     private async Task<long> ObtenerTipoIdentificadorInternoCodigoAsync(

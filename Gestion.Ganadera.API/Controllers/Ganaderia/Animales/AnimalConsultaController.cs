@@ -23,11 +23,17 @@ public class AnimalConsultaController(IAnimalConsultaService service) : Controll
     [HttpGet("paginado")]
     [RequirePermission(ControllerPermission.GetPaged)]
     public async Task<IActionResult> ObtenerPorPaginado(
-        [FromQuery] int pagina = 1, 
-        [FromQuery] int tamañoPagina = 25,
+        [FromQuery] int pagina = 1,
+        [FromQuery] int tamanoPagina = 25,
+        [FromQuery] long? fincaCodigo = null,
         CancellationToken cancellationToken = default)
     {
-        var (items, total) = await service.ObtenerPorPaginado(pagina, tamañoPagina, cancellationToken);
+        var (items, total) = await service.ObtenerPorPaginado(
+            pagina,
+            tamanoPagina,
+            fincaCodigo,
+            cancellationToken);
+
         return Ok(new { Items = items, TotalRegistros = total });
     }
 
@@ -36,6 +42,7 @@ public class AnimalConsultaController(IAnimalConsultaService service) : Controll
     public async Task<IActionResult> ConsultarPorCodigo(
         [FromServices] IValidator<CodigoRequest> validator,
         string codigo,
+        [FromQuery] long? fincaCodigo = null,
         CancellationToken cancellationToken = default)
     {
         var validacion = await ControllerValidatorHelper.ValidarCodigo(validator, codigo);
@@ -48,8 +55,8 @@ public class AnimalConsultaController(IAnimalConsultaService service) : Controll
         }
 
         var codigoNumerico = codigo.ToLong();
-        var snapshot = await service.Consultar(codigoNumerico, cancellationToken);
-        
+        var snapshot = await service.Consultar(codigoNumerico, fincaCodigo, cancellationToken);
+
         if (snapshot is null)
         {
             return ApiProblemDetailsFactory.NotFound(
@@ -64,9 +71,10 @@ public class AnimalConsultaController(IAnimalConsultaService service) : Controll
     [RequirePermission(ControllerPermission.GetById)]
     public async Task<IActionResult> ObtenerHistorial(
         [FromRoute] long codigo,
+        [FromQuery] long? fincaCodigo = null,
         CancellationToken cancellationToken = default)
     {
-        var historial = await service.ObtenerHistorialAsync(codigo, cancellationToken);
+        var historial = await service.ObtenerHistorialAsync(codigo, fincaCodigo, cancellationToken);
         return Ok(historial);
     }
 }

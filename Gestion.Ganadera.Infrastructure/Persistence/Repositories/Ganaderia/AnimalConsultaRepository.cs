@@ -7,17 +7,25 @@ namespace Gestion.Ganadera.Infrastructure.Persistence.Repositories.Ganaderia;
 public class AnimalConsultaRepository(AppDbContext context) : IAnimalConsultaRepository
 {
     public async Task<(IEnumerable<GanadoViewModel> Items, int TotalRegistros)> ObtenerPorPaginado(
-        int pagina, 
-        int tamañoPagina, 
+        int pagina,
+        int tamanoPagina,
+        long? fincaCodigo = null,
         CancellationToken cancellationToken = default)
     {
-        var query = from animal in context.Animales.AsNoTracking()
+        var animales = context.Animales.AsNoTracking();
+
+        if (fincaCodigo.HasValue)
+        {
+            animales = animales.Where(animal => animal.Finca_Codigo == fincaCodigo.Value);
+        }
+
+        var query = from animal in animales
                     join finca in context.Fincas.AsNoTracking() on animal.Finca_Codigo equals finca.Finca_Codigo
                     join potrero in context.Potreros.AsNoTracking() on animal.Potrero_Codigo equals potrero.Potrero_Codigo
                     join categoria in context.CategoriasAnimal.AsNoTracking() on animal.Categoria_Animal_Codigo equals categoria.Categoria_Animal_Codigo
                     from principalIdent in context.IdentificadoresAnimal.AsNoTracking()
-                        .Where(i => i.Animal_Codigo == animal.Animal_Codigo 
-                                 && i.Identificador_Animal_Es_Principal 
+                        .Where(i => i.Animal_Codigo == animal.Animal_Codigo
+                                 && i.Identificador_Animal_Es_Principal
                                  && i.Identificador_Animal_Activo)
                         .OrderByDescending(i => i.Identificador_Animal_Codigo)
                         .Take(1)
@@ -37,25 +45,33 @@ public class AnimalConsultaRepository(AppDbContext context) : IAnimalConsultaRep
 
         var items = await query
             .OrderByDescending(x => x.Animal_Codigo)
-            .Skip((pagina - 1) * tamañoPagina)
-            .Take(tamañoPagina)
+            .Skip((pagina - 1) * tamanoPagina)
+            .Take(tamanoPagina)
             .ToListAsync(cancellationToken);
 
         return (items, totalRegistros);
     }
 
     public async Task<AnimalViewModel?> Consultar(
-        long animalCodigo, 
+        long animalCodigo,
+        long? fincaCodigo = null,
         CancellationToken cancellationToken = default)
     {
-        var query = from animal in context.Animales.AsNoTracking()
-                    where animal.Animal_Codigo == animalCodigo
+        var animales = context.Animales.AsNoTracking()
+            .Where(animal => animal.Animal_Codigo == animalCodigo);
+
+        if (fincaCodigo.HasValue)
+        {
+            animales = animales.Where(animal => animal.Finca_Codigo == fincaCodigo.Value);
+        }
+
+        var query = from animal in animales
                     join finca in context.Fincas.AsNoTracking() on animal.Finca_Codigo equals finca.Finca_Codigo
                     join potrero in context.Potreros.AsNoTracking() on animal.Potrero_Codigo equals potrero.Potrero_Codigo
                     join categoria in context.CategoriasAnimal.AsNoTracking() on animal.Categoria_Animal_Codigo equals categoria.Categoria_Animal_Codigo
                     from principalIdent in context.IdentificadoresAnimal.AsNoTracking()
-                        .Where(i => i.Animal_Codigo == animal.Animal_Codigo 
-                                 && i.Identificador_Animal_Es_Principal 
+                        .Where(i => i.Animal_Codigo == animal.Animal_Codigo
+                                 && i.Identificador_Animal_Es_Principal
                                  && i.Identificador_Animal_Activo)
                         .OrderByDescending(i => i.Identificador_Animal_Codigo)
                         .Take(1)
@@ -78,12 +94,24 @@ public class AnimalConsultaRepository(AppDbContext context) : IAnimalConsultaRep
         return await query.FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<AnimalHistorialViewModel>> ObtenerHistorialAsync(long animalCodigo, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<AnimalHistorialViewModel>> ObtenerHistorialAsync(
+        long animalCodigo,
+        long? fincaCodigo = null,
+        CancellationToken cancellationToken = default)
     {
-        var eventos = await (from ea in context.EventosGanaderosAnimal.AsNoTracking()
-                             join e in context.EventosGanaderos.AsNoTracking() 
+        var animales = context.Animales.AsNoTracking()
+            .Where(animal => animal.Animal_Codigo == animalCodigo);
+
+        if (fincaCodigo.HasValue)
+        {
+            animales = animales.Where(animal => animal.Finca_Codigo == fincaCodigo.Value);
+        }
+
+        var eventos = await (from animal in animales
+                             join ea in context.EventosGanaderosAnimal.AsNoTracking()
+                               on animal.Animal_Codigo equals ea.Animal_Codigo
+                             join e in context.EventosGanaderos.AsNoTracking()
                                on ea.Evento_Ganadero_Codigo equals e.Evento_Ganadero_Codigo
-                             where ea.Animal_Codigo == animalCodigo
                              orderby e.Evento_Ganadero_Fecha descending
                              select new AnimalHistorialViewModel
                              {

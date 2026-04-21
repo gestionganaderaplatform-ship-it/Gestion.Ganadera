@@ -22,7 +22,7 @@ public class CompraService(
             Potrero_Codigo = request.Potrero_Codigo,
             Categoria_Animal_Codigo = request.Categoria_Animal_Codigo,
             Animal_Sexo = request.Animal_Sexo,
-            Animal_Origen_Ingreso = "COMPRA",
+            Animal_Origen_Ingreso = AnimalOrigenIngreso.Compra,
             Animal_Activo = true,
             Animal_Fecha_Ingreso_Inicial = request.Fecha_Compra,
             Animal_Fecha_Registro_Ingreso = fechaOperacion,
@@ -40,11 +40,11 @@ public class CompraService(
         var evento = new EventoGanadero
         {
             Finca_Codigo = request.Finca_Codigo,
-            Evento_Ganadero_Tipo = "COMPRA",
+            Evento_Ganadero_Tipo = EventoGanaderoTipo.Compra,
             Evento_Ganadero_Fecha = request.Fecha_Compra,
             Evento_Ganadero_Fecha_Registro = fechaOperacion,
             Evento_Ganadero_Registrado_Por = usuarioLogueado,
-            Evento_Ganadero_Estado = "COMPLETADO",
+            Evento_Ganadero_Estado = EventoGanaderoEstado.Completado,
             Evento_Ganadero_Observacion = request.Observacion,
             Evento_Ganadero_Es_Correccion = false,
             Evento_Ganadero_Es_Anulacion = false
@@ -52,7 +52,7 @@ public class CompraService(
 
         var eventoAnimal = new EventoGanaderoAnimal
         {
-            Evento_Ganadero_Animal_Estado_Afectacion = "PROCESADO"
+            Evento_Ganadero_Animal_Estado_Afectacion = EventoGanaderoAnimalEstadoAfectacion.Procesado
         };
 
         var fotoRegistro = new EventoDetalleCompra

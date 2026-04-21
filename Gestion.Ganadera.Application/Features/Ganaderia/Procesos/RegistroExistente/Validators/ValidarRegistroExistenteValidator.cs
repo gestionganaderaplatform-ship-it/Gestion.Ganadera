@@ -25,7 +25,11 @@ public class ValidarRegistroExistenteValidator : AbstractValidator<ValidarRegist
             .NotEmpty().WithMessage(ValidarRegistroExistenteMessages.IdentificadorRequerido)
             .Matches(RegexPatterns.AlfanumericoConAcentosYPuntuacion).WithMessage(ValidarRegistroExistenteMessages.IdentificadorFormatoInvalido)
             .MustAsync(async (request, identificador, cancellationToken) => 
-                !await registroExistenteRepository.ExisteIdentificadorActivoEnClienteAsync(identificador.Trim(), request.Tipo_Identificador_Codigo, cancellationToken))
+                !await registroExistenteRepository.ExisteIdentificadorActivoEnClienteAsync(
+                    request.Finca_Codigo,
+                    identificador.Trim(),
+                    request.Tipo_Identificador_Codigo,
+                    cancellationToken))
             .WithMessage(ValidarRegistroExistenteMessages.IdentificadorDuplicado)
             .WithName(nameof(ValidarRegistroExistenteRequest.Identificador_Principal));
 
@@ -81,6 +85,23 @@ public class ValidarRegistroExistenteValidator : AbstractValidator<ValidarRegist
         RuleFor(x => x.Animal_Sexo)
            .Cascade(CascadeMode.Stop)
            .NotEmpty().WithMessage(ValidarRegistroExistenteMessages.SexoRequerido)
-           .Must(s => s == "M" || s == "H" || s == "Macho" || s == "Hembra").WithMessage(ValidarRegistroExistenteMessages.SexoInvalido);
+           .Must(EsSexoValido)
+           .WithMessage(ValidarRegistroExistenteMessages.SexoInvalido);
+
+        RuleFor(x => x.Fecha_Nacimiento)
+            .Must(fecha => !fecha.HasValue || fecha.Value <= DateTime.Now)
+            .WithMessage(ValidarRegistroExistenteMessages.FechaNacimientoFutura);
+    }
+
+    private static bool EsSexoValido(string? sexo)
+    {
+        return sexo?.Trim().ToUpperInvariant() switch
+        {
+            "M" => true,
+            "H" => true,
+            "MACHO" => true,
+            "HEMBRA" => true,
+            _ => false
+        };
     }
 }

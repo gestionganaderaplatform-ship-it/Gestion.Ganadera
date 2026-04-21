@@ -2,6 +2,10 @@ namespace Gestion.Ganadera.Application.Features.Ganaderia.Procesos.RegistroExist
 
 public interface IValidarRegistroExistenteRepository
 {
-    Task<bool> ExisteIdentificadorActivoEnClienteAsync(string identificadorPrincipal, long tipoIdentificadorCodigo, CancellationToken cancellationToken = default);
+    Task<bool> ExisteIdentificadorActivoEnClienteAsync(
+        long fincaCodigo,
+        string identificadorPrincipal,
+        long tipoIdentificadorCodigo,
+        CancellationToken cancellationToken = default);
     Task<bool> FincaPoseePotreroAsync(long fincaCodigo, long potreroCodigo, CancellationToken cancellationToken = default);
 }

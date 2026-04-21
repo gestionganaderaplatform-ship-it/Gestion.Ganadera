@@ -55,12 +55,49 @@ public class RegistroExistenteController(IRegistroExistenteService service) : Co
              );
         }
 
-        var exito = await service.CrearRegistroAsync(request, cancellationToken);
+        var exito = await service.RegistrarAsync(request, cancellationToken);
 
         return exito 
             ? StatusCode(StatusCodes.Status201Created)
             : ApiProblemDetailsFactory.BadRequest(
                 HttpContext,
                 detail: API.ErrorHandling.Messages.ApiErrorMessages.OperationFailed);
+    }
+
+    [HttpPost("lote")]
+    [RequirePermission(ControllerPermission.Create)]
+    public async Task<IActionResult> RegistrarLote(
+        [FromServices] IValidator<RegistrarExistenteLoteRequest> validator,
+        [FromBody] RegistrarExistenteLoteRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var validacion = await ControllerValidatorHelper.ValidarEntidad(validator, request);
+        
+        if (validacion is not null)
+        {
+            return ApiProblemDetailsFactory.BadRequest(
+                 HttpContext,
+                 validacion
+             );
+        }
+
+        var exito = await service.RegistrarLoteAsync(request, cancellationToken);
+
+        return exito 
+            ? StatusCode(StatusCodes.Status201Created)
+            : ApiProblemDetailsFactory.BadRequest(
+                HttpContext,
+                detail: API.ErrorHandling.Messages.ApiErrorMessages.OperationFailed);
+    }
+
+    [HttpGet("existe-identificador")]
+    [RequirePermission(ControllerPermission.GetPaged)]
+    public async Task<IActionResult> VerificarIdentificador(
+        [FromQuery] long fincaCodigo,
+        [FromQuery] string identificador,
+        CancellationToken cancellationToken = default)
+    {
+        var existe = await service.ExisteIdentificadorAsync(fincaCodigo, identificador, cancellationToken);
+        return Ok(new { Existe = existe });
     }
 }

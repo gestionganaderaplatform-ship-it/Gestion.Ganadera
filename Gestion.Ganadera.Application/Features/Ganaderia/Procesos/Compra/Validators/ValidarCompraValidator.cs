@@ -25,7 +25,11 @@ public class ValidarCompraValidator : AbstractValidator<ValidarCompraRequest>
             .NotEmpty().WithMessage(CompraMessages.IdentificadorRequerido)
             .Matches(RegexPatterns.AlfanumericoConAcentosYPuntuacion).WithMessage(CompraMessages.IdentificadorFormatoInvalido)
             .MustAsync(async (request, identificador, cancellationToken) => 
-                !await registroExistenteRepository.ExisteIdentificadorActivoEnClienteAsync(identificador.Trim(), request.Tipo_Identificador_Codigo, cancellationToken))
+                !await registroExistenteRepository.ExisteIdentificadorActivoEnClienteAsync(
+                    request.Finca_Codigo,
+                    identificador.Trim(),
+                    request.Tipo_Identificador_Codigo,
+                    cancellationToken))
             .WithMessage(CompraMessages.IdentificadorDuplicado)
             .WithName(nameof(ValidarCompraRequest.Identificador_Principal));
 
@@ -81,6 +85,19 @@ public class ValidarCompraValidator : AbstractValidator<ValidarCompraRequest>
         RuleFor(x => x.Animal_Sexo)
            .Cascade(CascadeMode.Stop)
            .NotEmpty().WithMessage(CompraMessages.SexoRequerido)
-           .Must(s => s == "M" || s == "H" || s == "Macho" || s == "Hembra").WithMessage(CompraMessages.SexoInvalido);
+           .Must(EsSexoValido)
+           .WithMessage(CompraMessages.SexoInvalido);
+    }
+
+    private static bool EsSexoValido(string? sexo)
+    {
+        return sexo?.Trim().ToUpperInvariant() switch
+        {
+            "M" => true,
+            "H" => true,
+            "MACHO" => true,
+            "HEMBRA" => true,
+            _ => false
+        };
     }
 }

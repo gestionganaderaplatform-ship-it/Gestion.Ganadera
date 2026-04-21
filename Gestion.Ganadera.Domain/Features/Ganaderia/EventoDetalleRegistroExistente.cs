@@ -12,4 +12,5 @@ public class EventoDetalleRegistroExistente : AuditableEntity
     public long Potrero_Codigo { get; set; }
     public string Evento_Detalle_Registro_Existente_Sexo { get; set; } = string.Empty;
     public DateTime? Evento_Detalle_Registro_Existente_Fecha_Informada { get; set; }
+    public DateTime? Fecha_Nacimiento { get; set; }
 }

@@ -6,25 +6,34 @@ namespace Gestion.Ganadera.Infrastructure.Services.Ganaderia;
 public class AnimalConsultaService(IAnimalConsultaRepository repository) : IAnimalConsultaService
 {
     public Task<(IEnumerable<GanadoViewModel> Items, int TotalRegistros)> ObtenerPorPaginado(
-        int pagina, 
-        int tamañoPagina, 
+        int pagina,
+        int tamanoPagina,
+        long? fincaCodigo = null,
         CancellationToken cancellationToken = default)
     {
         var paginaNormalizada = pagina <= 0 ? 1 : pagina;
-        var tamañoPaginaNormalizado = tamañoPagina <= 0 ? 25 : Math.Min(tamañoPagina, 100);
+        var tamanoPaginaNormalizado = tamanoPagina <= 0 ? 25 : Math.Min(tamanoPagina, 100);
 
-        return repository.ObtenerPorPaginado(paginaNormalizada, tamañoPaginaNormalizado, cancellationToken);
+        return repository.ObtenerPorPaginado(
+            paginaNormalizada,
+            tamanoPaginaNormalizado,
+            fincaCodigo,
+            cancellationToken);
     }
 
     public Task<AnimalViewModel?> Consultar(
-        long animalCodigo, 
+        long animalCodigo,
+        long? fincaCodigo = null,
         CancellationToken cancellationToken = default)
     {
-        return repository.Consultar(animalCodigo, cancellationToken);
+        return repository.Consultar(animalCodigo, fincaCodigo, cancellationToken);
     }
 
-    public Task<IEnumerable<AnimalHistorialViewModel>> ObtenerHistorialAsync(long animalCodigo, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<AnimalHistorialViewModel>> ObtenerHistorialAsync(
+        long animalCodigo,
+        long? fincaCodigo = null,
+        CancellationToken cancellationToken = default)
     {
-        return repository.ObtenerHistorialAsync(animalCodigo, cancellationToken);
+        return repository.ObtenerHistorialAsync(animalCodigo, fincaCodigo, cancellationToken);
     }
 }

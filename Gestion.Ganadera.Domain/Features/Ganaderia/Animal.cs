@@ -11,6 +11,7 @@ public class Animal : AuditableEntity
     public string Animal_Sexo { get; set; } = string.Empty;
     public bool Animal_Activo { get; set; } = true;
     public string Animal_Origen_Ingreso { get; set; } = string.Empty;
+    public DateTime? Animal_Fecha_Nacimiento { get; set; }
     public DateTime Animal_Fecha_Ingreso_Inicial { get; set; }
     public DateTime Animal_Fecha_Registro_Ingreso { get; set; }
     public DateTime Animal_Fecha_Ultimo_Evento { get; set; }
