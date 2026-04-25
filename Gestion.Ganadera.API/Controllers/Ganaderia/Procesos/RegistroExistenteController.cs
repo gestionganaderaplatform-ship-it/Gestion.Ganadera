@@ -90,17 +90,6 @@ public class RegistroExistenteController(IRegistroExistenteService service) : Co
                 detail: API.ErrorHandling.Messages.ApiErrorMessages.OperationFailed);
     }
 
-    [HttpGet("existe-identificador")]
-    [RequirePermission(ControllerPermission.GetPaged)]
-    public async Task<IActionResult> VerificarIdentificador(
-        [FromQuery] long fincaCodigo,
-        [FromQuery] string identificador,
-        CancellationToken cancellationToken = default)
-    {
-        var existe = await service.ExisteIdentificadorAsync(fincaCodigo, identificador, cancellationToken);
-        return Ok(new { Existe = existe });
-    }
-
     [HttpGet("siguiente-consecutivo")]
     [RequirePermission(ControllerPermission.GetPaged)]
     public async Task<IActionResult> ObtenerSiguienteConsecutivo(
@@ -109,5 +98,20 @@ public class RegistroExistenteController(IRegistroExistenteService service) : Co
     {
         var siguienteConsecutivo = await service.ObtenerSiguienteConsecutivoAsync(fincaCodigo, cancellationToken);
         return Ok(new { Siguiente_Consecutivo = siguienteConsecutivo });
+    }
+
+    [HttpGet("existe-identificadores")]
+    [RequirePermission(ControllerPermission.GetPaged)]
+    public async Task<IActionResult> VerificarIdentificadores(
+        [FromQuery] long fincaCodigo,
+        [FromQuery] string identificadores,
+        CancellationToken cancellationToken = default)
+    {
+        var lista = identificadores
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+
+        var resultados = await service.ExistenIdentificadoresAsync(fincaCodigo, lista, cancellationToken);
+        return Ok(new { Resultados = resultados });
     }
 }

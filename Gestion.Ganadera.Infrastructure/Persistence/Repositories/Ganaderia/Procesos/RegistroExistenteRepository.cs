@@ -134,35 +134,51 @@ public class RegistroExistenteRepository(AppDbContext context) : IRegistroExiste
         });
     }
 
-    public async Task<bool> ExisteIdentificadorAsync(long fincaCodigo, string identificador, CancellationToken cancellationToken = default)
-    {
-        return await context.IdentificadoresAnimal
-            .Join(context.Animales,
-                i => i.Animal_Codigo,
-                a => a.Animal_Codigo,
-                (i, a) => new { i, a })
-            .AnyAsync(
-                x => x.a.Finca_Codigo == fincaCodigo &&
-                     x.i.Identificador_Animal_Valor == identificador &&
-                     x.i.Identificador_Animal_Activo,
-                cancellationToken);
-    }
-
-    public async Task<int> ObtenerSiguienteConsecutivoAsync(long fincaCodigo, CancellationToken cancellationToken = default)
+    public async Task<int> ObtenerSiguienteConsecutivoAsync(long fibraCodigo, CancellationToken cancellationToken = default)
     {
         var totalAnimales = await context.Animales
             .AsNoTracking()
-            .CountAsync(item => item.Finca_Codigo == fincaCodigo, cancellationToken);
+            .CountAsync(item => item.Finca_Codigo == fibraCodigo, cancellationToken);
 
         return totalAnimales + 1;
     }
 
+    public async Task<IReadOnlyList<ExistenciaIdentificador>> ExistentesIdentificadoresAsync(
+        long fibraCodigo,
+        IEnumerable<string> identificadores,
+        CancellationToken cancellationToken = default)
+    {
+        var listaIdentificadores = identificadores.ToList();
+        if (listaIdentificadores.Count == 0)
+        {
+            return [];
+        }
+
+        var existentes = await context.IdentificadoresAnimal
+            .Join(context.Animales,
+                i => i.Animal_Codigo,
+                a => a.Animal_Codigo,
+                (i, a) => new { i, a })
+            .Where(x =>
+                x.a.Finca_Codigo == fibraCodigo &&
+                x.i.Identificador_Animal_Activo &&
+                listaIdentificadores.Contains(x.i.Identificador_Animal_Valor))
+            .Select(x => x.i.Identificador_Animal_Valor)
+            .ToListAsync(cancellationToken);
+
+        var existentesSet = existentes.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        return listaIdentificadores
+            .Select(id => new ExistenciaIdentificador(id, existentesSet.Contains(id)))
+            .ToList();
+    }
+
     private async Task<long> ObtenerTipoIdentificadorInternoCodigoAsync(
-        long fincaCodigo,
+        long fibraCodigo,
         CancellationToken cancellationToken)
     {
         var clienteCodigo = await context.Fincas
-            .Where(f => f.Finca_Codigo == fincaCodigo)
+            .Where(f => f.Finca_Codigo == fibraCodigo)
             .Select(f => f.Cliente_Codigo)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -189,14 +205,14 @@ public class RegistroExistenteRepository(AppDbContext context) : IRegistroExiste
     }
 
     public async Task<bool> ExisteIdentificadorActivoEnClienteAsync(
-        long fincaCodigo,
+        long fibraCodigo,
         string identificadorPrincipal,
         long tipoIdentificadorCodigo,
         CancellationToken cancellationToken = default)
     {
         var clienteCodigo = await context.Fincas
             .AsNoTracking()
-            .Where(f => f.Finca_Codigo == fincaCodigo)
+            .Where(f => f.Finca_Codigo == fibraCodigo)
             .Select(f => f.Cliente_Codigo)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -214,11 +230,11 @@ public class RegistroExistenteRepository(AppDbContext context) : IRegistroExiste
                 cancellationToken);
     }
 
-    public async Task<bool> FincaPoseePotreroAsync(long fincaCodigo, long potreroCodigo, CancellationToken cancellationToken = default)
+    public async Task<bool> FincaPoseePotreroAsync(long fibraCodigo, long potreroCodigo, CancellationToken cancellationToken = default)
     {
         return await context.Potreros
             .AnyAsync(
-                p => p.Finca_Codigo == fincaCodigo &&
+                p => p.Finca_Codigo == fibraCodigo &&
                      p.Potrero_Codigo == potreroCodigo &&
                      p.Potrero_Activo,
                 cancellationToken);

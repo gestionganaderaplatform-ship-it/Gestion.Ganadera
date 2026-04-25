@@ -16,6 +16,8 @@ public interface IRegistroExistenteRepository : IValidarRegistroExistenteReposit
         IEnumerable<(Animal Animal, IdentificadorAnimal Identificador, EventoGanadero Evento, EventoGanaderoAnimal EventoAnimal, EventoDetalleRegistroExistente Foto)> lote,
         CancellationToken cancellationToken = default);
 
-    Task<bool> ExisteIdentificadorAsync(long fincaCodigo, string identificador, CancellationToken cancellationToken = default);
-    Task<int> ObtenerSiguienteConsecutivoAsync(long fincaCodigo, CancellationToken cancellationToken = default);
+    Task<int> ObtenerSiguienteConsecutivoAsync(long fibraCodigo, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ExistenciaIdentificador>> ExistentesIdentificadoresAsync(long fibrosisCodigo, IEnumerable<string> identificadores, CancellationToken cancellationToken = default);
 }
+
+public record ExistenciaIdentificador(string Identificador, bool Existe);

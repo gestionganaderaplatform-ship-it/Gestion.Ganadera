@@ -1,21 +1,24 @@
 /*
 ======================================================
- Script: Reset de datos - Gestion.Ganadera.API
+ Script: Reset suave de datos - Gestion.Ganadera.API
 ------------------------------------------------------
  Objetivo:
-   Limpiar datos operativos, funcionales y catalogos
-   del dominio Ganaderia para pruebas locales o de test.
+   Limpiar solo los datos transaccionales y de trazabilidad
+   para repetir pruebas funcionales sin perder la estructura
+   base de trabajo.
 
  Conserva:
    - __EFMigrationsHistory
    - Aplicacion.Menu_Navegacion
+   - Ganaderia.Finca
+   - Ganaderia.Potrero
+   - Ganaderia.Categoria_Animal
+   - Ganaderia.Rango_Edad
+   - Ganaderia.Tipo_Identificador
 
- Nota:
-   Se usa DELETE + DBCC CHECKIDENT en lugar de TRUNCATE
-   porque existen llaves foraneas entre tablas.
-
- Uso:
-   - Ejecutar sobre la base del API de negocio
+ Uso sugerido:
+   - Repetir pruebas de registro, compra, consulta e historial
+   - No usar cuando se quiera rehacer onboarding desde cero
    - No usar en produccion
 ======================================================
 */
@@ -58,22 +61,6 @@ IF OBJECT_ID('Ganaderia.Evento_Ganadero', 'U') IS NOT NULL
 IF OBJECT_ID('Ganaderia.Animal', 'U') IS NOT NULL
     DELETE FROM Ganaderia.Animal;
 
-/* Estructura operativa y catalogos por cliente */
-IF OBJECT_ID('Ganaderia.Potrero', 'U') IS NOT NULL
-    DELETE FROM Ganaderia.Potrero;
-
-IF OBJECT_ID('Ganaderia.Finca', 'U') IS NOT NULL
-    DELETE FROM Ganaderia.Finca;
-
-IF OBJECT_ID('Ganaderia.Categoria_Animal', 'U') IS NOT NULL
-    DELETE FROM Ganaderia.Categoria_Animal;
-
-IF OBJECT_ID('Ganaderia.Rango_Edad', 'U') IS NOT NULL
-    DELETE FROM Ganaderia.Rango_Edad;
-
-IF OBJECT_ID('Ganaderia.Tipo_Identificador', 'U') IS NOT NULL
-    DELETE FROM Ganaderia.Tipo_Identificador;
-
 IF OBJECT_ID('Seguridad.Auditoria', 'U') IS NOT NULL
    AND COLUMNPROPERTY(OBJECT_ID('Seguridad.Auditoria'), 'Auditoria_Codigo', 'IsIdentity') = 1
     DBCC CHECKIDENT ('Seguridad.Auditoria', RESEED, 0);
@@ -113,26 +100,6 @@ IF OBJECT_ID('Ganaderia.Evento_Ganadero', 'U') IS NOT NULL
 IF OBJECT_ID('Ganaderia.Animal', 'U') IS NOT NULL
    AND COLUMNPROPERTY(OBJECT_ID('Ganaderia.Animal'), 'Animal_Codigo', 'IsIdentity') = 1
     DBCC CHECKIDENT ('Ganaderia.Animal', RESEED, 0);
-
-IF OBJECT_ID('Ganaderia.Potrero', 'U') IS NOT NULL
-   AND COLUMNPROPERTY(OBJECT_ID('Ganaderia.Potrero'), 'Potrero_Codigo', 'IsIdentity') = 1
-    DBCC CHECKIDENT ('Ganaderia.Potrero', RESEED, 0);
-
-IF OBJECT_ID('Ganaderia.Finca', 'U') IS NOT NULL
-   AND COLUMNPROPERTY(OBJECT_ID('Ganaderia.Finca'), 'Finca_Codigo', 'IsIdentity') = 1
-    DBCC CHECKIDENT ('Ganaderia.Finca', RESEED, 0);
-
-IF OBJECT_ID('Ganaderia.Categoria_Animal', 'U') IS NOT NULL
-   AND COLUMNPROPERTY(OBJECT_ID('Ganaderia.Categoria_Animal'), 'Categoria_Animal_Codigo', 'IsIdentity') = 1
-    DBCC CHECKIDENT ('Ganaderia.Categoria_Animal', RESEED, 0);
-
-IF OBJECT_ID('Ganaderia.Rango_Edad', 'U') IS NOT NULL
-   AND COLUMNPROPERTY(OBJECT_ID('Ganaderia.Rango_Edad'), 'Rango_Edad_Codigo', 'IsIdentity') = 1
-    DBCC CHECKIDENT ('Ganaderia.Rango_Edad', RESEED, 0);
-
-IF OBJECT_ID('Ganaderia.Tipo_Identificador', 'U') IS NOT NULL
-   AND COLUMNPROPERTY(OBJECT_ID('Ganaderia.Tipo_Identificador'), 'Tipo_Identificador_Codigo', 'IsIdentity') = 1
-    DBCC CHECKIDENT ('Ganaderia.Tipo_Identificador', RESEED, 0);
 
 COMMIT TRANSACTION;
 GO
