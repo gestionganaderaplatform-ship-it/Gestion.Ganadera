@@ -16,7 +16,8 @@ namespace Gestion.Ganadera.Business.API.Controllers.Ganaderia.Fincas;
 [Route("api/v{version:apiVersion}/ganaderia/fincas")]
 [ControllerPermissions(
    ControllerPermission.GetAll
-   | ControllerPermission.Create)]
+   | ControllerPermission.Create
+   | ControllerPermission.Update)]
 public class FincaController(
     IFincaService service,
     ILogger<FincaController> logger)
