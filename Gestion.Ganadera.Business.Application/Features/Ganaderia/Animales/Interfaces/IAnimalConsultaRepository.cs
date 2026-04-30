@@ -29,6 +29,10 @@ public interface IAnimalConsultaRepository
         long? fincaCodigo = null,
         CancellationToken cancellationToken = default);
 
+    Task<IEnumerable<MadreElegibleViewModel>> ObtenerMadresElegiblesAsync(
+        long? fincaCodigo = null,
+        CancellationToken cancellationToken = default);
+
     Task<(IEnumerable<GanadoViewModel> Items, int TotalRegistros)> FiltrarPaginado(
         int pagina,
         int tamanoPagina,

@@ -58,6 +58,16 @@ public class AnimalConsultaController(IAnimalConsultaService service) : Controll
         return Ok(new { Items = items, TotalRegistros = total });
     }
 
+    [HttpGet("madres-elegibles")]
+    [RequirePermission(ControllerPermission.GetPaged)]
+    public async Task<IActionResult> ObtenerMadresElegibles(
+        [FromQuery] long? fincaCodigo = null,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await service.ObtenerMadresElegiblesAsync(fincaCodigo, cancellationToken);
+        return Ok(items);
+    }
+
     [HttpGet("{codigo}")]
     [RequirePermission(ControllerPermission.GetById)]
     public async Task<IActionResult> ConsultarPorCodigo(

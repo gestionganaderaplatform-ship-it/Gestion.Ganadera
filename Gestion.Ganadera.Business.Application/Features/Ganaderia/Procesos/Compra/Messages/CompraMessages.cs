@@ -23,4 +23,11 @@ public static class CompraMessages
     public const string OrigenVendedorRequerido = "El origen o vendedor es obligatorio.";
     public const string CategoriaIncompatibleConSexo = "La categoría indicada no es compatible con el sexo del animal.";
     public const string TipoIdentificadorInternoNoDisponible = "No existe el tipo de identificador interno del sistema para este cliente.";
+    public const string LoteSinAnimales = "La compra debe incluir al menos un animal.";
+    public const string LoteSuperaMaximo = "La compra no puede incluir más de 100 animales.";
+    public const string IdentificadoresRepetidosEnLote = "La compra contiene identificadores repetidos.";
+    public const string ValorTotalInvalido = "El valor total de la compra debe ser mayor a 0.";
+    public const string ValorIndividualInvalido = "El valor individual del animal debe ser mayor a 0.";
+    public const string ValoresIndividualesIncompletos = "Si informas el valor individual de un animal, debes informar el valor individual de todos los animales de la compra.";
+    public const string ValorTotalNoCoincide = "El valor total de la compra debe coincidir con la suma de valores individuales.";
 }

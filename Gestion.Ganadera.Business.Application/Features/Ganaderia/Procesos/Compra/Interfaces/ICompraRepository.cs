@@ -4,11 +4,17 @@ namespace Gestion.Ganadera.Business.Application.Features.Ganaderia.Procesos.Comp
 
 public interface ICompraRepository
 {
-    Task<bool> CrearRegistroAtómicoAsync(
+    Task<bool> CrearRegistroAtomicoAsync(
         Animal animal,
         IdentificadorAnimal identificador,
         EventoGanadero evento,
         EventoGanaderoAnimal eventoAnimal,
         EventoDetalleCompra fotoRegistro,
         CancellationToken cancellationToken = default);
+
+    Task<bool> RegistrarLoteAtomicoAsync(
+        IEnumerable<(Animal Animal, IdentificadorAnimal Identificador, EventoGanadero Evento, EventoGanaderoAnimal EventoAnimal, EventoDetalleCompra Foto)> lote,
+        CancellationToken cancellationToken = default);
+
+    Task<int> ObtenerSiguienteConsecutivoAsync(long fincaCodigo, CancellationToken cancellationToken = default);
 }

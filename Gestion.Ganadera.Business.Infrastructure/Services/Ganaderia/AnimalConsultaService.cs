@@ -54,6 +54,13 @@ public class AnimalConsultaService(IAnimalConsultaRepository repository) : IAnim
         return repository.ObtenerHistorialAsync(animalCodigo, fincaCodigo, cancellationToken);
     }
 
+    public Task<IEnumerable<MadreElegibleViewModel>> ObtenerMadresElegiblesAsync(
+        long? fincaCodigo = null,
+        CancellationToken cancellationToken = default)
+    {
+        return repository.ObtenerMadresElegiblesAsync(fincaCodigo, cancellationToken);
+    }
+
     public Task<(IEnumerable<GanadoViewModel> Items, int TotalRegistros)> FiltrarPaginado(
         int pagina,
         int tamanoPagina,

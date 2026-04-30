@@ -1,8 +1,8 @@
-# Compra · proceso de negocio
+# Compra - proceso de negocio
 
-## Proposito
+## Propósito
 
-`Compra` permite registrar el ingreso de un animal que entra a la operacion porque fue adquirido a un tercero.
+`Compra` permite registrar el ingreso de uno o varios animales adquiridos a un tercero.
 
 No representa una carga inicial, un nacimiento ni un movimiento interno. Representa un evento nuevo de ingreso con trazabilidad comercial y operativa.
 
@@ -12,20 +12,22 @@ Al terminar el proceso:
 
 - el animal queda creado en el inventario activo de la finca
 - el animal queda asociado a un potrero destino
-- el animal queda clasificado por categoria
-- el animal queda con identificacion principal valida
+- el animal queda clasificado por categoría
+- el animal queda con identificación principal válida
 - el historial operativo refleja que el origen del ingreso fue `Compra`
 - el evento conserva fecha y referencia del origen o vendedor
 
-## Cuando aplica
+Cuando la compra contiene varios animales, el registro debe guardarse de forma atómica: si falla un animal, no debe quedar una compra parcial.
+
+## Cuándo aplica
 
 Este proceso aplica cuando el cliente:
 
-- compra un animal y necesita dejarlo activo en su inventario
-- requiere trazar de donde vino el animal y en que fecha ingreso
-- necesita separar este ingreso de otros origenes como nacimiento o carga inicial
+- compra animales y necesita dejarlos activos en su inventario
+- requiere trazar de dónde vino el animal y en qué fecha ingresó
+- necesita separar este ingreso de otros orígenes como nacimiento o carga inicial
 
-## Cuando no aplica
+## Cuándo no aplica
 
 No debe usarse para:
 
@@ -33,76 +35,81 @@ No debe usarse para:
 - registrar nacimientos
 - mover animales entre potreros
 - trasladar animales entre fincas
-- corregir animales ya existentes si el caso real es una edicion posterior
+- corregir animales ya existentes si el caso real es una edición posterior
 
 ## Diferencia frente a Registro de existente
 
 `Registro de existente` resuelve una base inicial del inventario.
 
-`Compra` registra un evento nuevo de ingreso que si ocurrio durante la operacion y por eso exige contexto del origen o vendedor y fecha de compra.
+`Compra` registra un evento nuevo de ingreso que sí ocurrió durante la operación y por eso exige contexto del origen o vendedor y fecha de compra.
 
 ## Unidad operativa visible
 
 La unidad operativa visible sigue siendo el `potrero` destino dentro de la finca activa.
 
-La compra no pide sexo como decision visible principal.
-La clasificacion visible se concentra en la `categoria`.
+La compra no pide sexo como decisión visible principal. La clasificación visible se concentra en la `categoría`.
 
-## Datos minimos que el proceso debe dejar resueltos
+## Datos mínimos que el proceso debe dejar resueltos
 
-Cada compra debe dejar, como minimo:
+Cada compra debe dejar, como mínimo:
 
 - finca
 - fecha de compra
 - origen o vendedor
-- potrero destino
-- categoria animal
-- identificador principal
+- potrero destino por animal
+- categoría animal por animal
+- identificador principal por animal
 - origen del ingreso
 
-## Regla funcional de clasificacion
+Si la compra incluye valor comercial, el usuario puede informar un valor total de compra. Cuando no se detalla valor por animal, el backend calcula el valor individual promedio y lo conserva en el detalle de cada animal.
 
-La categoria sigue siendo el dato visible principal.
+Si una compra tiene animales con valores distintos, el proceso debe permitir informar el valor individual por animal. En ese caso, la suma de los valores individuales debe coincidir con el valor total informado.
 
-Sexo y rango de edad esperado se derivan desde la metadata de la categoria entregada por backend.
+## Regla funcional de clasificación
+
+La categoría sigue siendo el dato visible principal.
+
+Sexo y rango de edad esperado se derivan desde la metadata de la categoría entregada por backend.
 
 Eso significa:
 
 - el usuario no decide sexo como paso principal
 - el usuario no decide rango de edad como dato principal
-- la categoria concentra la clasificacion operativa visible
+- la categoría concentra la clasificación operativa visible
 
 ## Alcance actual del proceso
 
-La version actual del backend registra una compra por animal.
+El backend soporta compra individual y compra por lote.
 
-No existe todavia una operacion por lote para varios animales dentro de una sola compra.
+La compra por lote usa un contexto común de fecha, origen o vendedor, observación y valor total opcional. Cada animal conserva su propio potrero destino, categoría, rango, tipo de identificador, identificador principal y valor individual cuando aplique.
 
-Por eso la aplicacion debe comportarse hoy como compra individual y no simular un lote que la API aun no soporta.
+La operación por lote se registra con los eventos y detalles existentes del dominio. Actualmente no existe una tabla de encabezado comercial independiente para la compra; la unidad transaccional es el lote guardado de forma atómica.
 
-## Identificacion del animal
+## Identificación del animal
 
-La compra usa el tipo de identificador visible que el negocio permita para el animal.
+La compra debe usar la misma lógica de generación automática usada por `Registro de existente`: marca ganadera del cliente y siguiente consecutivo por finca.
 
 La regla de duplicidad del identificador debe mantenerse alineada entre:
 
 - documento vivo
 - validator final
 - repositorio
-- prevalidacion de frontend
+- prevalidación de frontend
+
+En lote, no deben repetirse identificadores dentro de la misma compra y tampoco deben existir previamente como identificadores activos de la finca.
 
 ## Regla sobre fechas
 
 La fecha clave del proceso es la `fecha de compra`.
 
-Debe validarse por dia calendario y no por desfase horario entre cliente, serializacion y backend.
+Debe validarse por día calendario y no por desfase horario entre cliente, serialización y backend.
 
-## Relacion con catalogos operativos
+## Relación con catálogos operativos
 
-El proceso depende de catalogos operativos vivos, especialmente:
+El proceso depende de catálogos operativos vivos, especialmente:
 
 - potrero
-- categoria animal
+- categoría animal
 - tipo de identificador
 
 `Potrero` debe poder resolverse dentro del flujo para no obligar al usuario a salir del proceso si detecta que le falta uno.
@@ -110,12 +117,13 @@ El proceso depende de catalogos operativos vivos, especialmente:
 ## Riesgos que el proceso debe evitar
 
 - tratar una compra como si fuera una carga inicial
-- pedir decisiones tecnicas que ya pueden derivarse por categoria
+- pedir decisiones técnicas que ya pueden derivarse por categoría
 - dejar pasar identificadores duplicados
+- guardar compras parciales cuando falla un animal del lote
 - romper la trazabilidad del origen comercial del ingreso
-- prometer compra por lote cuando backend aun no la soporta
+- calcular valores individuales en frontend con una regla distinta a backend
 
-## Relacion con otros procesos
+## Relación con otros procesos
 
 `Compra` comparte piezas de captura con otros procesos, pero representa un evento de negocio distinto a:
 
@@ -124,4 +132,4 @@ El proceso depende de catalogos operativos vivos, especialmente:
 - movimiento de potrero
 - traslado entre fincas
 
-La reutilizacion de componentes no debe borrar esa diferencia funcional.
+La reutilización de componentes no debe borrar esa diferencia funcional.

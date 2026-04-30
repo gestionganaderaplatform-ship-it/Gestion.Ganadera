@@ -273,6 +273,47 @@ public class AnimalConsultaRepository(AppDbContext context) : IAnimalConsultaRep
         return eventos;
     }
 
+    public async Task<IEnumerable<MadreElegibleViewModel>> ObtenerMadresElegiblesAsync(
+        long? fincaCodigo = null,
+        CancellationToken cancellationToken = default)
+    {
+        var animales = context.Animales.AsNoTracking()
+            .Where(animal => animal.Animal_Activo);
+
+        if (fincaCodigo.HasValue)
+        {
+            animales = animales.Where(animal => animal.Finca_Codigo == fincaCodigo.Value);
+        }
+
+        var query = from animal in animales
+                    join potrero in context.Potreros.AsNoTracking() on animal.Potrero_Codigo equals potrero.Potrero_Codigo
+                    join categoria in context.CategoriasAnimal.AsNoTracking() on animal.Categoria_Animal_Codigo equals categoria.Categoria_Animal_Codigo
+                    from principalIdent in context.IdentificadoresAnimal.AsNoTracking()
+                        .Where(i => i.Animal_Codigo == animal.Animal_Codigo
+                                 && i.Identificador_Animal_Es_Principal
+                                 && i.Identificador_Animal_Activo)
+                        .OrderByDescending(i => i.Identificador_Animal_Codigo)
+                        .Take(1)
+                        .DefaultIfEmpty()
+                    where animal.Animal_Sexo.ToUpper() == "HEMBRA"
+                       && (
+                           categoria.Categoria_Animal_Nombre.ToUpper().Contains("VACA")
+                           || categoria.Categoria_Animal_Nombre.ToUpper().Contains("NOVILLA")
+                       )
+                    select new MadreElegibleViewModel
+                    {
+                        Animal_Codigo = animal.Animal_Codigo,
+                        Animal_Identificador_Principal = principalIdent != null ? principalIdent.Identificador_Animal_Valor : "Sin identificador",
+                        Categoria_Animal_Nombre = categoria.Categoria_Animal_Nombre,
+                        Potrero_Nombre = potrero.Potrero_Nombre,
+                        Animal_Sexo = animal.Animal_Sexo
+                    };
+
+        return await query
+            .OrderBy(x => x.Animal_Identificador_Principal)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<(IEnumerable<GanadoViewModel> Items, int TotalRegistros)> FiltrarPaginado(
         int pagina,
         int tamanoPagina,
