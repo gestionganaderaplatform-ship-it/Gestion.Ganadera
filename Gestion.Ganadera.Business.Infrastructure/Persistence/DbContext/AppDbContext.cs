@@ -20,9 +20,11 @@ namespace Gestion.Ganadera.Business.Infrastructure.Persistence
 
         public DbSet<Auditoria> Auditorias { get; set; } = null!;
         public DbSet<Animal> Animales { get; set; } = null!;
+        public DbSet<AnimalRelacionFamiliar> AnimalesRelacionesFamiliares { get; set; } = null!;
         public DbSet<CategoriaAnimal> CategoriasAnimal { get; set; } = null!;
         public DbSet<EventoDetalleRegistroExistente> EventosDetalleRegistroExistente { get; set; } = null!;
         public DbSet<EventoDetalleCompra> EventosDetalleCompra { get; set; } = null!;
+        public DbSet<EventoDetalleNacimiento> EventosDetalleNacimiento { get; set; } = null!;
         public DbSet<EventoGanadero> EventosGanaderos { get; set; } = null!;
         public DbSet<EventoGanaderoAnimal> EventosGanaderosAnimal { get; set; } = null!;
         public DbSet<Finca> Fincas { get; set; } = null!;
@@ -59,6 +61,8 @@ namespace Gestion.Ganadera.Business.Infrastructure.Persistence
                 .HasQueryFilter(entity => IsClientScopeDisabled || entity.Cliente_Codigo == CurrentClientNumericId);
             modelBuilder.Entity<Animal>()
                 .HasQueryFilter(entity => IsClientScopeDisabled || entity.Cliente_Codigo == CurrentClientNumericId);
+            modelBuilder.Entity<AnimalRelacionFamiliar>()
+                .HasQueryFilter(entity => IsClientScopeDisabled || entity.Cliente_Codigo == CurrentClientNumericId);
             modelBuilder.Entity<Potrero>()
                 .HasQueryFilter(entity => IsClientScopeDisabled || entity.Cliente_Codigo == CurrentClientNumericId);
             modelBuilder.Entity<IdentificadorAnimal>()
@@ -70,6 +74,8 @@ namespace Gestion.Ganadera.Business.Infrastructure.Persistence
             modelBuilder.Entity<EventoDetalleRegistroExistente>()
                 .HasQueryFilter(entity => IsClientScopeDisabled || entity.Cliente_Codigo == CurrentClientNumericId);
             modelBuilder.Entity<EventoDetalleCompra>()
+                .HasQueryFilter(entity => IsClientScopeDisabled || entity.Cliente_Codigo == CurrentClientNumericId);
+            modelBuilder.Entity<EventoDetalleNacimiento>()
                 .HasQueryFilter(entity => IsClientScopeDisabled || entity.Cliente_Codigo == CurrentClientNumericId);
             base.OnModelCreating(modelBuilder);
         }
